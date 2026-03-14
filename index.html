@@ -13,7 +13,7 @@
         .title-name { font-size: 0.85em; display: block; margin-top: 1px; }
         .header-info { font-size: 0.65em; font-weight: normal; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
         .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
-        .gps-alert { font-size: 0.55em; margin-top: 6px; color: #e0e0e0; font-style: italic; }
+        .gps-alert { font-size: 0.55em; margin-top: 6px; color: #e0e0e0; font-style: italic; text-transform: uppercase; }
         .search-container { padding: 8px 15px; background: #f0f2f5; flex-shrink: 0; }
         .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
         #status { font-size: 0.75em; color: #666; text-align: center; padding: 3px; font-weight: bold; }
@@ -32,7 +32,7 @@
         <div class="header-info">
             ΓΙΑ ΟΠΟΙΑΔΗΠΟΤΕ ΑΠΟΡΙΑ - ΠΛΗΡΟΦΟΡΙΑ ΕΠΙΚΟΙΝΩΝΗΣΤΕ ΜΑΖΙ ΜΟΥ:<br>
             <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
-            <div class="gps-alert">ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΗ ΤΟΠΟΘΕΣΙΑ(GPS) ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ ΑΠΟ ΤΟ ΚΙΝΗΤΟ/TABLET ΣΑΣ</div>
+            <div class="gps-alert">ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΗ ΤΟΠΟΘΕΣΙΑ(GPS) ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ ΑΠΟ ΤΟ ΚΙΝΗΤΟ/TABLET ΣΑΣ & ΚΑΝΤΕ REFRESH ΤΗ ΣΕΛΙΔΑ</div>
         </div>
     </div>
     <div class="search-container">
@@ -81,14 +81,12 @@
         function updateFilteredData(filter = "") {
             const searchTerm = filter.toLowerCase();
             let temp = [...allData];
-
             if (userPos) {
                 temp.forEach(item => {
                     item.computedDist = getDistance(userPos.lat, userPos.lon, parseFloat(item.Y), parseFloat(item.X));
                 });
                 temp.sort((a, b) => a.computedDist - b.computedDist);
             }
-
             filteredData = temp.filter(item => item.Name.toLowerCase().includes(searchTerm));
             limit = 50;
             renderList();
@@ -97,11 +95,9 @@
         function renderList() {
             const listDiv = document.getElementById('list');
             const itemsToDisplay = filteredData.slice(0, limit);
-
             listDiv.innerHTML = itemsToDisplay.map(item => {
                 const distTxt = item.computedDist ? item.computedDist.toFixed(2) + ' KM' : '';
                 const mapLink = "https://www.google.com/maps/dir/?api=1&destination=" + item.Y + "," + item.X;
-                
                 return `
                     <div class="item">
                         <div class="name">${item.Name} <span class="dist">${distTxt}</span></div>
