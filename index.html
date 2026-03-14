@@ -6,8 +6,8 @@
     <title>OTEMAPS SEARCH & GO CREATOR STEFANOS POLYCHROPOULOS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; }
-        .header { background: #005eb8; color: white; padding: 15px; text-align: center; font-weight: bold; line-height: 1.3; z-index: 10; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #005eb8; color: white; padding: 15px; text-align: center; font-weight: bold; line-height: 1.3; }
         .title-main { font-size: 1.15em; display: block; letter-spacing: 1px; }
         .title-creator { font-size: 0.7em; display: block; margin-top: 4px; opacity: 0.8; font-weight: normal; }
         .title-name { font-size: 0.9em; display: block; margin-top: 2px; letter-spacing: 0.5px; }
@@ -17,14 +17,14 @@
         
         #status { font-size: 0.8em; color: #666; text-align: center; padding: 5px; font-weight: bold; }
         
-        #list { flex: 1; overflow-y: auto; padding: 0 15px; }
+        #list { flex: 1; overflow-y: auto; padding: 0 15px; -webkit-overflow-scrolling: touch; }
         .item { background: white; padding: 16px; margin-bottom: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .name { font-weight: bold; color: #1c1e21; font-size: 1.05em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
         .dist { color: #007cbf; font-weight: 800; font-size: 0.9em; margin-top: 4px; display: block; }
         .btn { background: #005eb8; color: white; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; min-width: 85px; }
         
-        .footer { background: white; padding: 10px; text-align: center; font-size: 0.75em; color: #555; border-top: 1px solid #ddd; z-index: 10; }
-        .footer a { color: #005eb8; font-weight: bold; text-decoration: none; }
+        .footer { background: white; padding: 12px; text-align: center; font-size: 0.75em; color: #333; border-top: 2px solid #005eb8; font-weight: 500; }
+        .footer a { color: #005eb8; font-weight: bold; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -37,7 +37,7 @@
 
     <div class="search-container">
         <input type="text" id="search" class="search-box" placeholder="ΑΝΑΖΗΤΗΣΗ ΣΗΜΕΙΟΥ...">
-        <div id="status">⏳ ΦΟΡΤΩΣΗ ΔΕΔΟΜΕΝΩΝ...</div>
+        <div id="status">⏳ ΦΟΡΤΩΣΗ...</div>
     </div>
     
     <div id="list"></div>
@@ -74,10 +74,10 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-                    document.getElementById('status').innerText = "📍 Η ΤΟΠΟΘΕΣΙΑ ΣΑΣ ΒΡΕΘΗΚΕ";
+                    document.getElementById('status').innerText = "📍 ΤΟΠΟΘΕΣΙΑ ΕΝΕΡΓΗ";
                     renderList();
                 }, () => {
-                    document.getElementById('status').innerText = "⚠️ ΤΟ GPS ΕΙΝΑΙ ΚΛΕΙΣΤΟ";
+                    document.getElementById('status').innerText = "⚠️ GPS ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΟ";
                     renderList();
                 });
             }
@@ -103,7 +103,8 @@
                 const div = document.createElement('div');
                 div.className = 'item';
                 const distTxt = item.computedDist ? `${item.computedDist.toFixed(2)} KM` : "";
-                const mapLink = `http://maps.google.com/?q=${item.Y},${item.X}`;
+                // ΓΡΗΓΟΡΟ LINK GOOGLE MAPS
+                const mapLink = `https://www.google.com/maps/dir/?api=1&destination=${item.Y},${item.X}`;
                 
                 div.innerHTML = `
                     <div class="name">${item.Name} <span class="dist">${distTxt}</span></div>
