@@ -15,6 +15,9 @@
         
         .header-info { font-size: 0.65em; font-weight: normal; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
         .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
+        
+        /* ΤΟ ΝΕΟ ΜΗΝΥΜΑ ΜΕ ΜΙΚΡΑ ΓΡΑΜΜΑΤΑ */
+        .gps-alert { font-size: 0.55em; font-weight: normal; margin-top: 6px; color: #e0e0e0; font-style: italic; }
 
         .search-container { padding: 8px 15px; background: #f0f2f5; }
         .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
@@ -38,6 +41,7 @@
         <div class="header-info">
             ΓΙΑ ΟΠΟΙΑΔΗΠΟΤΕ ΑΠΟΡΙΑ - ΠΛΗΡΟΦΟΡΙΑ ΕΠΙΚΟΙΝΩΝΗΣΤΕ ΜΑΖΙ ΜΟΥ:<br>
             <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
+            <div class="gps-alert">ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΗ ΤΟΠΟΘΕΣΙΑ(GPS) ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ ΑΠΟ ΤΟ ΚΙΝΗΤΟ/TABLET ΣΑΣ</div>
         </div>
     </div>
 
@@ -105,8 +109,8 @@
                 div.className = 'item';
                 const distTxt = item.computedDist ? `${item.computedDist.toFixed(2)} KM` : "";
                 
-                // ΤΑΧΥΤΑΤΟ LINK ΧΩΡΙΣ "Ή"
-                const mapLink = "https://www.google.com/maps/search/?api=1&query=" + item.Y + "," + item.X;
+                // ΤΑΧΥΤΑΤΟ LINK
+                const mapLink = "https://www.google.com/maps/dir/?api=1&destination=" + item.Y + "," + item.X;
                 
                 div.innerHTML = `
                     <div class="name">${item.Name} <span class="dist">${distTxt}</span></div>
