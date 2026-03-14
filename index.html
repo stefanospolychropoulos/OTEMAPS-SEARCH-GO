@@ -3,31 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTEMAPS Search & Go</title>
+    <title>OTEMAPS SEARCH & GO CREATOR STEFANOS POLYCHROPOULOS</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 15px; background: #eceff1; }
-        h2 { color: #005eb8; text-align: center; margin-bottom: 10px; }
-        .search-box { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #005eb8; border-radius: 8px; font-size: 16px; box-sizing: border-box; }
-        #status { font-size: 0.85em; color: #555; text-align: center; margin-bottom: 15px; }
-        .item { background: white; padding: 15px; margin-bottom: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-        .name { font-weight: bold; color: #333; font-size: 1.1em; max-width: 65%; }
-        .dist { color: #007cbf; font-weight: bold; font-size: 0.9em; }
-        .btn { background: #005eb8; color: white; padding: 10px 15px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: bold; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 15px; background: #f0f2f5; display: flex; flex-direction: column; min-height: 100vh; }
+        .header { background: #005eb8; color: white; padding: 15px; text-align: center; margin: -15px -15px 15px -15px; font-size: 0.85em; font-weight: bold; }
+        .search-box { width: 100%; padding: 15px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
+        #status { font-size: 0.8em; color: #666; text-align: center; margin-bottom: 10px; font-weight: bold; }
+        #list { flex: 1; }
+        .item { background: white; padding: 16px; margin-bottom: 12px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .name { font-weight: bold; color: #1c1e21; font-size: 1.05em; max-width: 65%; line-height: 1.2; text-transform: uppercase; }
+        .dist { color: #007cbf; font-weight: 800; font-size: 0.9em; margin-top: 4px; display: block; }
+        .btn { background: #005eb8; color: white; padding: 12px 15px; border-radius: 8px; text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; min-width: 85px; }
+        .footer { margin-top: 20px; padding: 15px; text-align: center; font-size: 0.8em; color: #555; border-top: 1px solid #ddd; line-height: 1.5; }
+        .footer a { color: #005eb8; font-weight: bold; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <h2>OTEMAPS</h2>
-    <input type="text" id="search" class="search-box" placeholder="Αναζήτηση (π.χ. ΨΥΧΙΚΟ)...">
-    <div id="status">Φόρτωση δεδομένων...</div>
+    <div class="header">OTEMAPS SEARCH & GO CREATOR STEFANOS POLYCHROPOULOS</div>
+    <input type="text" id="search" class="search-box" placeholder="ΑΝΑΖΗΤΗΣΗ ΣΗΜΕΙΟΥ...">
+    <div id="status">⏳ ΦΟΡΤΩΣΗ ΔΕΔΟΜΕΝΩΝ...</div>
+    
     <div id="list"></div>
+
+    <div class="footer">
+        ΓΙΑ ΟΠΟΙΑΔΗΠΟΤΕ ΑΠΟΡΙΑ Ή ΠΛΗΡΟΦΟΡΙΑ ΕΠΙΚΟΙΝΩΝΗΣΤΕ ΜΑΖΙ ΜΟΥ:<br>
+        <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
+    </div>
 
     <script>
         let data = [];
         let userPos = null;
 
-        // Υπολογισμός απόστασης
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371; 
             const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -37,13 +45,12 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // Φόρτωση του CSV που ανέβασες
         Papa.parse("OTESEARCH&GO.csv", {
             download: true,
             header: true,
             skipEmptyLines: true,
             complete: function(results) {
-                data = results.data;
+                data = results.data.filter(row => row.Name);
                 initGPS();
             }
         });
@@ -52,10 +59,10 @@
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
                     userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-                    document.getElementById('status').innerText = "📍 Η τοποθεσία σας βρέθηκε";
+                    document.getElementById('status').innerText = "📍 Η ΤΟΠΟΘΕΣΙΑ ΣΑΣ ΒΡΕΘΗΚΕ";
                     renderList();
                 }, () => {
-                    document.getElementById('status').innerText = "⚠️ Το GPS είναι απενεργοποιημένο";
+                    document.getElementById('status').innerText = "⚠️ ΤΟ GPS ΕΙΝΑΙ ΚΛΕΙΣΤΟ";
                     renderList();
                 });
             }
@@ -64,12 +71,10 @@
         function renderList(filter = "") {
             const listDiv = document.getElementById('list');
             listDiv.innerHTML = "";
-
             let displayData = [...data];
 
             if (userPos) {
                 displayData.forEach(item => {
-                    // Χρησιμοποιούμε Χ και Y όπως είναι στο δικό σου CSV
                     item.computedDist = getDistance(userPos.lat, userPos.lon, parseFloat(item.Y), parseFloat(item.X));
                 });
                 displayData.sort((a, b) => a.computedDist - b.computedDist);
@@ -77,15 +82,17 @@
 
             const filtered = displayData.filter(item => 
                 item.Name && item.Name.toLowerCase().includes(filter.toLowerCase())
-            ).slice(0, 50); // Δείχνουμε τα 50 κοντινότερα για ταχύτητα
+            ).slice(0, 50);
 
             filtered.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'item';
-                const distTxt = item.computedDist ? `${item.computedDist.toFixed(2)} km` : "";
+                const distTxt = item.computedDist ? `${item.computedDist.toFixed(2)} KM` : "";
+                const mapLink = `https://www.google.com/maps/dir/?api=1&destination=${item.Y},${item.X}`;
+                
                 div.innerHTML = `
-                    <div class="name">${item.Name} <br> <span class="dist">${distTxt}</span></div>
-                    <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=${item.Y},${item.X}" target="_blank">GO</a>
+                    <div class="name">${item.Name} <span class="dist">${distTxt}</span></div>
+                    <a class="btn" href="${mapLink}" target="_blank">ΠΛΟΗΓΗΣΗ</a>
                 `;
                 listDiv.appendChild(div);
             });
