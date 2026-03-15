@@ -6,192 +6,118 @@
     <title>OTEMAPS SEARCH & GO</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        /* ΣΤΥΛ ΕΦΑΡΜΟΓΗΣ */
-        body { 
-            font-family: -apple-system, sans-serif; 
-            margin: 0; background: #000; color: #fff; 
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
-        }
-
-        /* HEADER ΟΠΩΣ ΗΤΑΝ */
-        .header { 
-            background: #005eb8; color: white; padding: 12px; text-align: center; 
-            font-weight: bold; line-height: 1.2; flex-shrink: 0; 
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { background: #005eb8; color: white; padding: 12px; text-align: center; font-weight: bold; line-height: 1.2; flex-shrink: 0; }
         .title-main { font-size: 1.1em; display: block; letter-spacing: 1px; }
         .title-creator { font-size: 0.65em; display: block; margin-top: 3px; opacity: 0.8; font-weight: normal; }
         .title-name { font-size: 0.85em; display: block; margin-top: 1px; }
-
-        .header-info { 
-            font-size: 0.8em; font-weight: normal; margin-top: 8px; padding-top: 8px; 
-            border-top: 1px solid rgba(255,255,255,0.2); 
-        }
+        .header-info { font-size: 0.65em; font-weight: normal; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
         .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
-
-        /* SEARCH CONTAINER */
-        .search-container { padding: 15px; background: #000; flex-shrink: 0; }
-        .search-wrapper { position: relative; width: 100%; }
-        .search-box { 
-            width: 100%; padding: 12px 45px 12px 15px; 
-            border: 2px solid #fff; border-radius: 12px; 
-            background: #fff; color: #000; font-weight: bold; box-sizing: border-box;
-            outline: none; font-size: 16px;
-        }
-
-        /* ΜΙΚΡΟΦΩΝΟ ΜΕΣΑ ΣΤΟ ΠΛΑΙΣΙΟ */
-        .voice-btn { 
-            position: absolute; right: 10px; top: 50%; transform: translateY(-50%); 
-            background: none; border: none; cursor: pointer; padding: 5px;
-            display: flex; align-items: center;
-        }
-        .voice-btn img { width: 24px; height: 24px; }
-
-        #status { text-align: center; font-size: 0.8em; color: #00aaff; padding: 5px; font-weight: bold; }
-
-        /* ΛΙΣΤΑ ΜΕ ΛΕΥΚΑ ΠΛΑΙΣΙΑ */
-        #list { flex: 1; overflow-y: auto; padding: 10px; }
-        .item { 
-            background: #fff; color: #000; padding: 15px; margin-bottom: 12px; 
-            border-radius: 15px; display: flex; justify-content: space-between; align-items: center; 
-            box-shadow: 0 4px 10px rgba(255,255,255,0.1);
-        }
-        .name-box { max-width: 65%; }
-        .name-box strong { font-size: 1em; text-transform: uppercase; display: block; line-height: 1.2; }
-        .dist { color: #005eb8; font-weight: 800; font-size: 0.9em; margin-top: 4px; display: block; }
-        
-        .btn { 
-            background: #ff00ff; color: #fff; padding: 12px 18px; border-radius: 10px; 
-            text-decoration: none; font-weight: bold; font-size: 14px; text-align: center;
-        }
+        .gps-alert { font-size: 0.55em; margin-top: 6px; color: #e0e0e0; font-style: italic; text-transform: uppercase; }
+        .search-container { padding: 8px 15px; background: #f0f2f5; flex-shrink: 0; }
+        .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
+        #status { font-size: 0.75em; color: #666; text-align: center; padding: 3px; font-weight: bold; }
+        #list { flex: 1; overflow-y: auto; padding: 0 15px; -webkit-overflow-scrolling: touch; }
+        .item { background: white; padding: 14px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .name { font-weight: bold; color: #1c1e21; font-size: 1em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
+        .dist { color: #007cbf; font-weight: 800; font-size: 0.85em; margin-top: 4px; display: block; }
+        .btn { background: #005eb8; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; text-align: center; min-width: 80px; }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <span class="title-main">OTEMAPS SEARCH & GO</span>
-    <span class="title-creator">CREATOR</span>
-    <span class="title-name">STEFANOS POLYCHROPOULOS</span>
-    <div class="header-info">
-        ΕΠΙΚΟΙΝΩΝΙΑ: <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a><br>
-        <button onclick="location.reload()" style="background:#ffcc00; border:none; padding:4px 10px; border-radius:4px; font-weight:bold; margin-top:5px; cursor:pointer;">REFRESH</button>
+    <div class="header">
+        <span class="title-main">OTEMAPS SEARCH & GO</span>
+        <span class="title-creator">CREATOR</span>
+        <span class="title-name">STEFANOS POLYCHROPOULOS</span>
+        <div class="header-info">
+            ΓΙΑ ΟΠΟΙΑΔΗΠΟΤΕ ΑΠΟΡΙΑ - ΠΛΗΡΟΦΟΡΙΑ ΕΠΙΚΟΙΝΩΝΗΣΤΕ ΜΑΖΙ ΜΟΥ:<br>
+            <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
+            <div class="gps-alert">ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΗ ΤΟΠΟΘΕΣΙΑ(GPS) ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ ΑΠΟ ΤΟ ΚΙΝΗΤΟ/TABLET ΣΑΣ & ΚΑΝΤΕ REFRESH ΤΗ ΣΕΛΙΔΑ</div>
+        </div>
     </div>
-</div>
-
-<div class="search-container">
-    <div class="search-wrapper">
+    <div class="search-container">
         <input type="text" id="search" class="search-box" placeholder="ΑΝΑΖΗΤΗΣΗ ΣΗΜΕΙΟΥ...">
-        <button class="voice-btn" onclick="startDictation()">
-            <img src="https://img.icons8.com/material-rounded/24/000000/microphone.png" alt="mic">
-        </button>
+        <div id="status">⏳ ΑΝΑΜΟΝΗ GPS...</div>
     </div>
-    <div id="status">⏳ ΑΝΑΜΟΝΗ GPS...</div>
-</div>
+    <div id="list"></div>
 
-<div id="list"></div>
+    <script>
+        let allData = [];
+        let filteredData = [];
+        let userPos = null;
+        let limit = 50;
 
-<script>
-    let allData = [];
-    let userPos = null;
-
-    // ΛΕΙΤΟΥΡΓΙΑ ΜΙΚΡΟΦΩΝΟΥ
-    function startDictation() {
-        const Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!Speech) {
-            alert("Ο browser δεν υποστηρίζει φωνητική αναζήτηση.");
-            return;
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        const recognition = new Speech();
-        recognition.lang = "el-GR";
-        recognition.interimResults = false;
-        recognition.maxAlternatives = 1;
-
-        recognition.onstart = () => {
-            document.getElementById('search').placeholder = "Σας ακούω...";
-            document.getElementById('search').style.border = "2px solid #ff00ff";
-        };
-
-        recognition.onresult = (e) => {
-            const result = e.results[0][0].transcript;
-            document.getElementById('search').value = result;
-            updateList();
-        };
-
-        recognition.onerror = (e) => {
-            console.error("Mic error:", e.error);
-            if(e.error === 'not-allowed') {
-                alert("Το μικρόφωνο είναι κλειδωμένο. Πατήστε το λουκέτο πάνω αριστερά στο URL και επιλέξτε 'Να επιτρέπεται'.");
+        Papa.parse("OTESEARCH&GO.csv", {
+            download: true,
+            header: true,
+            skipEmptyLines: true,
+            complete: function(results) {
+                allData = results.data.filter(row => row.Name);
+                updateFilteredData();
+                initGPS();
             }
-        };
+        });
 
-        recognition.onend = () => {
-            document.getElementById('search').placeholder = "ΑΝΑΖΗΤΗΣΗ ΣΗΜΕΙΟΥ...";
-            document.getElementById('search').style.border = "2px solid #fff";
-        };
-
-        try {
-            recognition.start();
-        } catch (err) {
-            console.log("Recognition already started");
-        }
-    }
-
-    // ΥΠΟΛΟΓΙΣΜΟΣ ΑΠΟΣΤΑΣΗΣ
-    function getDist(lat1, lon1, lat2, lon2) {
-        const R = 6371;
-        const dLat = (lat2-lat1)*Math.PI/180;
-        const dLon = (lon2-lon1)*Math.PI/180;
-        const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
-
-    // ΦΟΡΤΩΣΗ CSV
-    Papa.parse("OTESEARCH&GO.csv", {
-        download: true, 
-        header: true, 
-        skipEmptyLines: true,
-        complete: (res) => {
-            allData = res.data.filter(r => r.Name);
-            updateList();
-            initGPS();
-        }
-    });
-
-    function initGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(p => {
-                userPos = {lat: parseFloat(p.coords.latitude), lon: parseFloat(p.coords.longitude)};
-                document.getElementById('status').innerText = "📍 ΤΟΠΟΘΕΣΙΑ ΕΝΕΡΓΗ";
-                updateList();
-            }, (err) => {
-                document.getElementById('status').innerText = "⚠️ GPS ERROR: " + err.message;
-            }, { enableHighAccuracy: true });
-        }
-    }
-
-    function updateList() {
-        const query = document.getElementById('search').value.toLowerCase();
-        let filtered = allData.filter(i => i.Name.toLowerCase().includes(query));
-        
-        if (userPos) {
-            filtered.forEach(i => {
-                i.d = getDist(userPos.lat, userPos.lon, parseFloat(i.Y), parseFloat(i.X));
-            });
-            filtered.sort((a,b) => a.d - b.d);
+        function initGPS() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+                    document.getElementById('status').innerText = "📍 ΤΟΠΟΘΕΣΙΑ ΕΝΕΡΓΗ";
+                    updateFilteredData(document.getElementById('search').value);
+                }, () => {
+                    document.getElementById('status').innerText = "⚠️ GPS ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΟ";
+                }, { enableHighAccuracy: true });
+            }
         }
 
-        document.getElementById('list').innerHTML = filtered.slice(0, 60).map(i => `
-            <div class="item">
-                <div class="name-box">
-                    <strong>${i.Name}</strong>
-                    <span class="dist">${i.d ? i.d.toFixed(2)+' KM' : '-- KM'}</span>
-                </div>
-                <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=${i.Y},${i.X}" target="_blank">GO</a>
-            </div>
-        `).join('');
-    }
+        function updateFilteredData(filter = "") {
+            const searchTerm = filter.toLowerCase();
+            let temp = [...allData];
+            if (userPos) {
+                temp.forEach(item => {
+                    item.computedDist = getDistance(userPos.lat, userPos.lon, parseFloat(item.Y), parseFloat(item.X));
+                });
+                temp.sort((a, b) => a.computedDist - b.computedDist);
+            }
+            filteredData = temp.filter(item => item.Name.toLowerCase().includes(searchTerm));
+            limit = 50;
+            renderList();
+        }
 
-    document.getElementById('search').addEventListener('input', updateList);
-</script>
+        function renderList() {
+            const listDiv = document.getElementById('list');
+            const itemsToDisplay = filteredData.slice(0, limit);
+            listDiv.innerHTML = itemsToDisplay.map(item => {
+                const distTxt = item.computedDist ? item.computedDist.toFixed(2) + ' KM' : '';
+                const mapLink = "https://www.google.com/maps/dir/?api=1&destination=" + item.Y + "," + item.X;
+                return `
+                    <div class="item">
+                        <div class="name">${item.Name} <span class="dist">${distTxt}</span></div>
+                        <a class="btn" href="${mapLink}" target="_blank">ΠΛΟΗΓΗΣΗ</a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        document.getElementById('list').addEventListener('scroll', function(e) {
+            const el = e.target;
+            if (el.scrollHeight - el.scrollTop <= el.clientHeight + 100) {
+                if (limit < filteredData.length) {
+                    limit += 50;
+                    renderList();
+                }
+            }
+        });
+
+        document.getElementById('search').addEventListener('input', (e) => updateFilteredData(e.target.value));
+    </script>
 </body>
 </html>
