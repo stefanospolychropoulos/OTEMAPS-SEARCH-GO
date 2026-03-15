@@ -13,9 +13,31 @@
         .title-main { font-size: 1.1em; display: block; letter-spacing: 1px; }
         .title-creator { font-size: 0.65em; display: block; margin-top: 3px; opacity: 0.8; font-weight: normal; }
         .title-name { font-size: 0.85em; display: block; margin-top: 1px; }
-        .header-info { font-size: 0.65em; font-weight: normal; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
-        .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
-        .gps-alert { font-size: 0.55em; margin-top: 6px; color: #e0e0e0; font-style: italic; text-transform: uppercase; }
+        .header-info { font-size: 0.75em; font-weight: normal; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.6; }
+        .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; font-size: 1.1em; }
+        
+        /* ΜΕΓΑΛΥΤΕΡΑ ΓΡΑΜΜΑΤΑ & ΚΟΥΜΠΙ REFRESH */
+        .gps-alert { font-size: 0.85em; margin-top: 10px; color: #ffffff; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        
+        .refresh-inline-btn {
+            background: #ffcc00;
+            color: #005eb8;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.9em;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            vertical-align: middle;
+        }
+        .refresh-inline-btn img { width: 14px; height: 14px; }
+        .refresh-inline-btn:active { transform: scale(0.95); }
+
         .search-container { padding: 8px 15px; background: #f0f2f5; flex-shrink: 0; }
         .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
         #status { font-size: 0.75em; color: #666; text-align: center; padding: 3px; font-weight: bold; }
@@ -23,7 +45,6 @@
         .item { background: white; padding: 14px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .name { font-weight: bold; color: #1c1e21; font-size: 1em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
         .dist { color: #007cbf; font-weight: 800; font-size: 0.85em; margin-top: 4px; display: block; }
-        /* ΑΛΛΑΓΗ ΣΕ MAGENTA */
         .btn { background: #ff00ff; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; text-align: center; min-width: 80px; }
     </style>
 </head>
@@ -35,7 +56,12 @@
         <div class="header-info">
             ΓΙΑ ΟΠΟΙΑΔΗΠΟΤΕ ΑΠΟΡΙΑ - ΠΛΗΡΟΦΟΡΙΑ ΕΠΙΚΟΙΝΩΝΗΣΤΕ ΜΑΖΙ ΜΟΥ:<br>
             <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
-            <div class="gps-alert">ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΗ ΤΟΠΟΘΕΣΙΑ(GPS) ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ ΑΠΟ ΤΟ ΚΙΝΗΤΟ/TABLET ΣΑΣ & ΚΑΝΤΕ REFRESH ΤΗ ΣΕΛΙΔΑ</div>
+            <div class="gps-alert">
+                ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΟ GPS ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ
+                <span>ΚΑΝΤΕ <button class="refresh-inline-btn" onclick="location.reload()">
+                    <img src="https://img.icons8.com/material-rounded/24/005eb8/refresh.png" alt="refresh"> REFRESH
+                </button> ΣΤΗ ΣΕΛΙΔΑ</span>
+            </div>
         </div>
     </div>
     <div class="search-container">
@@ -49,6 +75,7 @@
         let filteredData = [];
         let userPos = null;
         let limit = 50;
+        let hasAlerted = false;
 
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371; 
@@ -65,18 +92,25 @@
             complete: function(results) {
                 allData = results.data.filter(row => row.Name);
                 updateFilteredData();
-                initGPS();
+                startTracking();
             }
         });
 
-        function initGPS() {
+        function startTracking() {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(pos => {
+                navigator.geolocation.watchPosition(pos => {
                     userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
                     document.getElementById('status').innerText = "📍 ΤΟΠΟΘΕΣΙΑ ΕΝΕΡΓΗ";
+                    document.getElementById('status').style.color = "green";
+                    hasAlerted = false;
                     updateFilteredData(document.getElementById('search').value);
                 }, () => {
                     document.getElementById('status').innerText = "⚠️ GPS ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΟ";
+                    document.getElementById('status').style.color = "red";
+                    if (!hasAlerted) {
+                        alert("ΠΡΟΣΟΧΗ: Το GPS είναι απενεργοποιημένο. Ενεργοποιήστε την τοποθεσία για να βλέπετε τις αποστάσεις.");
+                        hasAlerted = true;
+                    }
                 }, { enableHighAccuracy: true });
             }
         }
@@ -99,7 +133,7 @@
             const listDiv = document.getElementById('list');
             const itemsToDisplay = filteredData.slice(0, limit);
             listDiv.innerHTML = itemsToDisplay.map(item => {
-                const distTxt = item.computedDist ? item.computedDist.toFixed(2) + ' KM' : '';
+                const distTxt = item.computedDist ? item.computedDist.toFixed(2) + ' KM' : '---';
                 const mapLink = "https://www.google.com/maps/dir/?api=1&destination=" + item.Y + "," + item.X;
                 return `
                     <div class="item">
