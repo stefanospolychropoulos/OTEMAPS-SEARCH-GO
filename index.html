@@ -9,39 +9,33 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { background: #005eb8; color: white; padding: 12px; text-align: center; font-weight: bold; line-height: 1.2; flex-shrink: 0; position: relative; }
-        
-        /* Μικρό εικονίδιο Refresh */
-        .refresh-btn { position: absolute; right: 10px; top: 12px; background: none; border: none; cursor: pointer; }
-        .refresh-btn img { width: 22px; height: 22px; filter: brightness(0) invert(1); }
-
+        .header { background: #005eb8; color: white; padding: 12px; text-align: center; font-weight: bold; line-height: 1.2; flex-shrink: 0; }
         .title-main { font-size: 1.1em; display: block; letter-spacing: 1px; }
         .title-creator { font-size: 0.65em; display: block; margin-top: 3px; opacity: 0.8; font-weight: normal; }
         .title-name { font-size: 0.85em; display: block; margin-top: 1px; }
         .header-info { font-size: 0.65em; font-weight: normal; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
         .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
-        
+        .gps-alert { font-size: 0.55em; margin-top: 6px; color: #e0e0e0; font-style: italic; text-transform: uppercase; }
         .search-container { padding: 8px 15px; background: #f0f2f5; flex-shrink: 0; }
         .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
-        
-        #status { font-size: 0.75em; text-align: center; padding: 3px; font-weight: bold; transition: all 0.3s; }
+        #status { font-size: 0.75em; color: #666; text-align: center; padding: 3px; font-weight: bold; }
         #list { flex: 1; overflow-y: auto; padding: 0 15px; -webkit-overflow-scrolling: touch; }
         .item { background: white; padding: 14px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .name { font-weight: bold; color: #1c1e21; font-size: 1em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
         .dist { color: #007cbf; font-weight: 800; font-size: 0.85em; margin-top: 4px; display: block; }
+        /* ΑΛΛΑΓΗ ΣΕ MAGENTA */
         .btn { background: #ff00ff; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; text-align: center; min-width: 80px; }
     </style>
 </head>
 <body>
     <div class="header">
-        <button class="refresh-btn" onclick="location.reload()">
-            <img src="https://img.icons8.com/material-outlined/48/ffffff/refresh--v1.png" alt="Refresh">
-        </button>
         <span class="title-main">OTEMAPS SEARCH & GO</span>
         <span class="title-creator">CREATOR</span>
         <span class="title-name">STEFANOS POLYCHROPOULOS</span>
         <div class="header-info">
-            ΕΠΙΚΟΙΝΩΝΙΑ: <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
+            ΓΙΑ ΟΠΟΙΑΔΗΠΟΤΕ ΑΠΟΡΙΑ - ΠΛΗΡΟΦΟΡΙΑ ΕΠΙΚΟΙΝΩΝΗΣΤΕ ΜΑΖΙ ΜΟΥ:<br>
+            <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
+            <div class="gps-alert">ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΗ ΤΟΠΟΘΕΣΙΑ(GPS) ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ ΚΕΝΤΡΩΝ ΑΠΟ ΤΟ ΚΙΝΗΤΟ/TABLET ΣΑΣ & ΚΑΝΤΕ REFRESH ΤΗ ΣΕΛΙΔΑ</div>
         </div>
     </div>
     <div class="search-container">
@@ -55,7 +49,6 @@
         let filteredData = [];
         let userPos = null;
         let limit = 50;
-        let hasAlerted = false; // Για να μην πετάει το pop-up συνέχεια
 
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371; 
@@ -66,31 +59,24 @@
         }
 
         Papa.parse("OTESEARCH&GO.csv", {
-            download: true, header: true, skipEmptyLines: true,
+            download: true,
+            header: true,
+            skipEmptyLines: true,
             complete: function(results) {
                 allData = results.data.filter(row => row.Name);
                 updateFilteredData();
-                startTracking(); // Ξεκινάει την παρακολούθηση του GPS
+                initGPS();
             }
         });
 
-        function startTracking() {
+        function initGPS() {
             if (navigator.geolocation) {
-                // Η watchPosition ενημερώνει αυτόματα όταν αλλάζει η κατάσταση
-                navigator.geolocation.watchPosition(pos => {
+                navigator.geolocation.getCurrentPosition(pos => {
                     userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
                     document.getElementById('status').innerText = "📍 ΤΟΠΟΘΕΣΙΑ ΕΝΕΡΓΗ";
-                    document.getElementById('status').style.color = "green";
-                    hasAlerted = false; // Reset αν ανοίξει το GPS
                     updateFilteredData(document.getElementById('search').value);
                 }, () => {
                     document.getElementById('status').innerText = "⚠️ GPS ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΟ";
-                    document.getElementById('status').style.color = "red";
-                    
-                    if (!hasAlerted) {
-                        alert("ΠΡΟΣΟΧΗ: Το GPS είναι απενεργοποιημένο. Ενεργοποιήστε την τοποθεσία για να βλέπετε τις αποστάσεις.");
-                        hasAlerted = true; // Το δείχνει μόνο μία φορά μέχρι να αλλάξει η κατάσταση
-                    }
                 }, { enableHighAccuracy: true });
             }
         }
@@ -113,7 +99,7 @@
             const listDiv = document.getElementById('list');
             const itemsToDisplay = filteredData.slice(0, limit);
             listDiv.innerHTML = itemsToDisplay.map(item => {
-                const distTxt = item.computedDist ? item.computedDist.toFixed(2) + ' KM' : '---';
+                const distTxt = item.computedDist ? item.computedDist.toFixed(2) + ' KM' : '';
                 const mapLink = "https://www.google.com/maps/dir/?api=1&destination=" + item.Y + "," + item.X;
                 return `
                     <div class="item">
