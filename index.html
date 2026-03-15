@@ -4,35 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTEMAPS SEARCH & GO</title>
-    <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { background: #005eb8; color: white; padding: 12px; text-align: center; font-weight: bold; line-height: 1.2; flex-shrink: 0; }
-        .title-main { font-size: 1.1em; display: block; letter-spacing: 1px; }
-        .title-creator { font-size: 0.65em; display: block; margin-top: 3px; opacity: 0.8; font-weight: normal; }
-        .title-name { font-size: 0.85em; display: block; margin-top: 1px; }
-        .header-info { font-size: 0.85em; font-weight: normal; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.6; }
-        .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; font-size: 1.1em; }
-        
-        .gps-alert { font-size: 1em; margin-top: 10px; color: #ffffff; font-weight: 500; display: flex; flex-direction: column; align-items: center; gap: 8px; }
-        
-        .refresh-inline-btn {
-            background: #ffcc00; color: #005eb8; border: none; padding: 6px 14px; border-radius: 6px;
-            font-weight: 800; font-size: 0.9em; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2); text-transform: uppercase;
+        /* TOTAL DARK THEME */
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; padding: 0; 
+            background: #0d0d0d; /* Σχεδόν μαύρο φόντο */
+            color: #ffffff; 
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden; 
         }
-        .refresh-inline-btn img { width: 14px; height: 14px; }
 
-        .search-container { padding: 8px 15px; background: #f0f2f5; flex-shrink: 0; }
-        .search-box { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; }
-        #status { font-size: 0.85em; color: #666; text-align: center; padding: 5px; font-weight: bold; }
+        .header { 
+            background: #002d5a; /* Πολύ βαθύ Navy Blue */
+            color: white; padding: 15px; text-align: center; font-weight: bold; line-height: 1.3; flex-shrink: 0; 
+            border-bottom: 2px solid #004a91;
+        }
         
+        .title-main { font-size: 1.2em; display: block; letter-spacing: 1px; }
+        .title-creator { font-size: 0.65em; display: block; opacity: 0.8; font-weight: normal; margin-top: 4px; }
+        .title-name { font-size: 0.9em; display: block; margin-bottom: 8px; }
+
+        .header-info { 
+            font-size: 0.85em; font-weight: normal; padding-top: 10px; 
+            border-top: 1px solid rgba(255,255,255,0.05); line-height: 1.6; 
+        }
+        .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
+
+        .refresh-inline-btn {
+            background: #ffcc00; color: #000; border: none; padding: 5px 12px; border-radius: 6px;
+            font-weight: 800; font-size: 0.85em; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+            vertical-align: middle; margin-left: 5px;
+        }
+
+        /* SEARCH BOX ΜΕ ΜΙΚΡΟΦΩΝΟ */
+        .search-container { padding: 15px; background: #0d0d0d; flex-shrink: 0; }
+        .search-wrapper { position: relative; width: 100%; }
+        .search-box { 
+            width: 100%; padding: 12px 45px 12px 15px; 
+            border: 1px solid #333; border-radius: 12px; 
+            font-size: 16px; box-sizing: border-box; 
+            text-transform: uppercase; background: #1a1a1a; color: white;
+            outline: none;
+        }
+        .search-box:focus { border-color: #004a91; }
+        
+        .voice-btn {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: none; border: none; cursor: pointer; padding: 0;
+            display: flex; align-items: center;
+        }
+        .voice-btn img { width: 22px; height: 22px; filter: invert(1); opacity: 0.7; }
+
+        #status { font-size: 0.85em; color: #666; text-align: center; padding: 5px; font-weight: bold; }
+
+        /* ΛΙΣΤΑ ΚΑΙ ΚΑΡΤΕΣ */
         #list { flex: 1; overflow-y: auto; padding: 0 15px; -webkit-overflow-scrolling: touch; }
-        .item { background: white; padding: 14px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .name { font-weight: bold; color: #1c1e21; font-size: 1em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
-        .dist { color: #007cbf; font-weight: 800; font-size: 0.9em; margin-top: 4px; display: block; }
-        .btn { background: #ff00ff; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; text-align: center; min-width: 80px; }
+        .item { 
+            background: #1a1a1a; /* Σκούρο γκρι/μαύρο πλαίσιο για το όνομα */
+            padding: 16px; margin-bottom: 12px; border-radius: 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            border: 1px solid #262626;
+        }
+        .name { font-weight: bold; color: #ffffff; font-size: 1.05em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
+        .dist { color: #00aaff; font-weight: 800; font-size: 0.95em; margin-top: 5px; display: block; }
+        
+        .btn { 
+            background: #ff00ff; color: white; padding: 12px 16px; border-radius: 10px; 
+            text-decoration: none; font-size: 13px; font-weight: bold; text-align: center; 
+            min-width: 90px; box-shadow: 0 4px 12px rgba(255, 0, 255, 0.2);
+        }
+        .btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
@@ -41,19 +84,24 @@
         <span class="title-creator">CREATOR</span>
         <span class="title-name">STEFANOS POLYCHROPOULOS</span>
         <div class="header-info">
-            ΕΠΙΚΟΙΝΩΝΙΑ: <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
-            <div class="gps-alert">
-                ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΟ GPS ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ
-                <span>ΚΑΙ ΠΑΤΗΣΤΕ <button class="refresh-inline-btn" onclick="location.reload()">
-                    <img src="https://img.icons8.com/material-rounded/24/005eb8/refresh.png"> REFRESH
-                </button></span>
-            </div>
+            ΕΠΙΚΟΙΝΩΝΙΑ: <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a><br>
+            ΕΝΕΡΓΟΠΟΙΗΣΤΕ ΤΟ GPS ΓΙΑ LIVE ΑΠΟΣΤΑΣΕΙΣ<br>
+            ΚΑΙ ΠΑΤΗΣΤΕ <button class="refresh-inline-btn" onclick="location.reload()">
+                 REFRESH
+            </button>
         </div>
     </div>
+
     <div class="search-container">
-        <input type="text" id="search" class="search-box" placeholder="ΑΝΑΖΗΤΗΣΗ ΣΗΜΕΙΟΥ...">
+        <div class="search-wrapper">
+            <input type="text" id="search" class="search-box" placeholder="ΑΝΑΖΗΤΗΣΗ ΣΗΜΕΙΟΥ...">
+            <button class="voice-btn" onclick="startDictation()">
+                <img src="https://img.icons8.com/material-rounded/24/ffffff/microphone.png" alt="mic">
+            </button>
+        </div>
         <div id="status">⏳ ΑΝΑΜΟΝΗ GPS...</div>
     </div>
+
     <div id="list"></div>
 
     <script>
@@ -61,8 +109,7 @@
         let filteredData = [];
         let userPos = null;
         let limit = 50;
-        let hasAlerted = false;
-        let isFirstGPSLoad = true;
+        let isFirstGPS = true;
 
         function getDistance(lat1, lon1, lat2, lon2) {
             const R = 6371; 
@@ -70,6 +117,24 @@
             const dLon = (lon2 - lon1) * Math.PI / 180;
             const a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+
+        function startDictation() {
+            if (window.hasOwnProperty('webkitSpeechRecognition')) {
+                var recognition = new webkitSpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = "el-GR";
+                recognition.start();
+                recognition.onresult = function(e) {
+                    document.getElementById('search').value = e.results[0][0].transcript;
+                    recognition.stop();
+                    updateFilteredData(true);
+                };
+                recognition.onerror = function() { recognition.stop(); };
+            } else {
+                alert("Η φωνητική αναζήτηση δεν υποστηρίζεται.");
+            }
         }
 
         Papa.parse("OTESEARCH&GO.csv", {
@@ -86,22 +151,14 @@
                 navigator.geolocation.watchPosition(pos => {
                     userPos = { lat: pos.coords.latitude, lon: pos.coords.longitude };
                     document.getElementById('status').innerText = "📍 ΤΟΠΟΘΕΣΙΑ ΕΝΕΡΓΗ";
-                    document.getElementById('status').style.color = "green";
-                    
-                    if (isFirstGPSLoad) {
+                    document.getElementById('status').style.color = "#00aaff";
+                    if (isFirstGPS) {
                         updateFilteredData(true);
-                        isFirstGPSLoad = false;
+                        isFirstGPS = false;
                     } else {
                         updateDistancesOnly();
                     }
-                }, () => {
-                    document.getElementById('status').innerText = "⚠️ GPS ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΟ";
-                    document.getElementById('status').style.color = "red";
-                    if (!hasAlerted) {
-                        alert("ΠΡΟΣΟΧΗ: Το GPS είναι κλειστό.");
-                        hasAlerted = true;
-                    }
-                }, { enableHighAccuracy: true });
+                }, null, { enableHighAccuracy: true });
             }
         }
 
@@ -119,20 +176,11 @@
         function updateFilteredData(shouldRender = false) {
             const searchTerm = document.getElementById('search').value.toLowerCase();
             allData.forEach(item => {
-                if (userPos) {
-                    item.computedDist = getDistance(userPos.lat, userPos.lon, parseFloat(item.Y), parseFloat(item.X));
-                } else {
-                    item.computedDist = null;
-                }
+                if (userPos) item.computedDist = getDistance(userPos.lat, userPos.lon, parseFloat(item.Y), parseFloat(item.X));
             });
             filteredData = allData.filter(item => item.Name.toLowerCase().includes(searchTerm));
-            if (userPos) {
-                filteredData.sort((a, b) => (a.computedDist || Infinity) - (b.computedDist || Infinity));
-            }
-            if(shouldRender) {
-                limit = 50;
-                renderList();
-            }
+            if (userPos) filteredData.sort((a, b) => (a.computedDist || Infinity) - (b.computedDist || Infinity));
+            if(shouldRender) { limit = 50; renderList(); }
         }
 
         function renderList() {
@@ -153,10 +201,7 @@
         document.getElementById('list').addEventListener('scroll', function(e) {
             const el = e.target;
             if (el.scrollHeight - el.scrollTop <= el.clientHeight + 100) {
-                if (limit < filteredData.length) {
-                    limit += 50;
-                    renderList();
-                }
+                if (limit < filteredData.length) { limit += 50; renderList(); }
             }
         });
 
