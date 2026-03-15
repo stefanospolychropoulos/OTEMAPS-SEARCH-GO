@@ -3,7 +3,7 @@
   "name": "OTEMAPS SEARCH & GO",
   "icons": [
     {
-      "src": "https://img.icons8.com/fluency/512/magenta/map-pin.png",
+      "src": "https://img.icons8.com/ios-filled/512/ff00ff/marker.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
@@ -11,6 +11,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#ff00ff",
+  "theme_color": "#005eb8",
   "background_color": "#ffffff"
 }
