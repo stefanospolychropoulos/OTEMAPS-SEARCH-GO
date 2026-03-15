@@ -3,7 +3,7 @@
   "name": "OTEMAPS SEARCH & GO",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/235/235861.png",
+      "src": "https://img.icons8.com/fluency/512/magenta/map-pin.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
@@ -11,6 +11,6 @@
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#005eb8",
+  "theme_color": "#ff00ff",
   "background_color": "#ffffff"
 }
