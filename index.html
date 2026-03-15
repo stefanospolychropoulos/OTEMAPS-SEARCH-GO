@@ -9,19 +9,32 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: #f0f2f5; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        /* HEADER ΜΕ ΚΟΥΜΠΙ REFRESH */
-        .header { background: #005eb8; color: white; padding: 12px; text-align: center; position: relative; flex-shrink: 0; }
-        .refresh-btn { position: absolute; right: 10px; top: 10px; background: rgba(255,255,255,0.2); border: 1px solid white; color: white; padding: 5px 10px; border-radius: 5px; font-size: 10px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        .header { background: #005eb8; color: white; padding: 15px; text-align: center; flex-shrink: 0; }
         
-        .title-main { font-size: 1.1em; display: block; letter-spacing: 1px; font-weight: bold; }
-        .title-creator { font-size: 0.65em; display: block; margin-top: 3px; opacity: 0.8; }
-        .title-name { font-size: 0.85em; display: block; margin-top: 1px; }
+        /* ΤΟ ΚΕΙΜΕΝΟ ΠΟΥ ΓΙΝΕΤΑΙ ΚΟΥΜΠΙ REFRESH */
+        .refresh-title { 
+            font-size: 1.2em; 
+            display: inline-block; 
+            letter-spacing: 1.5px; 
+            font-weight: 900; 
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .refresh-title:active { background: rgba(255, 255, 255, 0.3); transform: scale(0.98); }
+
+        .title-creator { font-size: 0.65em; display: block; margin-top: 10px; opacity: 0.8; font-weight: normal; }
+        .title-name { font-size: 0.85em; display: block; margin-top: 2px; font-weight: bold; }
         
-        .header-info { font-size: 0.65em; font-weight: normal; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
+        .header-info { font-size: 0.65em; font-weight: normal; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); line-height: 1.4; }
         .header-info a { color: #ffcc00; text-decoration: none; font-weight: bold; }
         
-        .search-container { padding: 8px 15px; background: #f0f2f5; flex-shrink: 0; }
-        .search-box { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; outline: none; }
+        .search-container { padding: 10px 15px; background: #f0f2f5; flex-shrink: 0; }
+        .search-box { width: 100%; padding: 12px; border: 2px solid #005eb8; border-radius: 12px; font-size: 16px; box-sizing: border-box; text-transform: uppercase; outline: none; }
         
         #status { font-size: 0.75em; color: #666; text-align: center; padding: 5px; font-weight: bold; }
         
@@ -30,16 +43,19 @@
         .name { font-weight: bold; color: #1c1e21; font-size: 0.95em; max-width: 60%; line-height: 1.2; text-transform: uppercase; }
         .dist { color: #007cbf; font-weight: 800; font-size: 0.85em; margin-top: 4px; display: block; }
         
-        .btn { background: #ff00ff; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; text-align: center; min-width: 80px; }
+        .btn { background: #ff00ff; color: white; padding: 10px 14px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: bold; text-align: center; min-width: 80px; border: none; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <button class="refresh-btn" onclick="location.reload()">Refresh</button>
-        <span class="title-main">OTEMAPS SEARCH & GO</span>
+        <div class="refresh-title" onclick="location.reload()">
+            OTEMAPS SEARCH & GO
+        </div>
+        
         <span class="title-creator">CREATOR</span>
         <span class="title-name">STEFANOS POLYCHROPOULOS</span>
+        
         <div class="header-info">
             ΕΠΙΚΟΙΝΩΝΙΑ: <a href="mailto:spolychropoulos@c-ts.gr">spolychropoulos@c-ts.gr</a>
         </div>
@@ -66,7 +82,6 @@
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }
 
-        // ΦΟΡΤΩΣΗ ΔΕΔΟΜΕΝΩΝ
         Papa.parse("OTESEARCH&GO.csv", {
             download: true,
             header: true,
@@ -78,7 +93,6 @@
             }
         });
 
-        // ΕΛΕΓΧΟΣ GPS ΚΑΙ POP-UP
         function initGPS() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(pos => {
@@ -87,13 +101,9 @@
                     document.getElementById('status').style.color = "green";
                     updateFilteredData(document.getElementById('search').value);
                 }, () => {
-                    // ΑΥΤΟ ΕΙΝΑΙ ΤΟ POP-UP ΜΗΝΥΜΑ
-                    alert("ΠΡΟΣΟΧΗ: Το GPS είναι απενεργοποιημένο! Ενεργοποιήστε την τοποθεσία για να βλέπετε τις αποστάσεις.");
                     document.getElementById('status').innerText = "⚠️ GPS ΑΠΕΝΕΡΓΟΠΟΙΗΜΕΝΟ";
                     document.getElementById('status').style.color = "red";
                 }, { enableHighAccuracy: true });
-            } else {
-                alert("Η συσκευή σας δεν υποστηρίζει GPS.");
             }
         }
 
